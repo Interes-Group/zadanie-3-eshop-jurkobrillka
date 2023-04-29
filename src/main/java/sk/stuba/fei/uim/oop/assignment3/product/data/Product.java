@@ -3,6 +3,7 @@ package sk.stuba.fei.uim.oop.assignment3.product.data;
 import jdk.jfr.Enabled;
 import lombok.Getter;
 import lombok.Setter;
+import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductRequest;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,4 +24,12 @@ public class Product {
     private String unit;
     private double price;
 
+
+    public Product(ProductRequest productRequest) {
+        this.name = productRequest.getName();
+        this.description = productRequest.getDescription();
+        this.amount = productRequest.getAmount();
+        this.unit = productRequest.getUnit();
+        this.price = productRequest.getPrice();
+    }
 }
