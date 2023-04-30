@@ -62,14 +62,16 @@ public class ProductService implements IProductService{
 
     @Override
     public int getProductAmount(long id) throws NotFoundException {
-        //TODO
-        //tu si skoncil
-        here
-        return 0;
+        Product product = getProductById(id);
+        return product.getAmount();
     }
 
     @Override
     public int addProductAmount(long id, int amountPar) throws NotFoundException {
-        return 0;
+        Product oldProd = getProductById(id);
+        int newAmount = oldProd.getAmount()+amountPar;
+        oldProd.setAmount(newAmount);
+        productRepository.save(oldProd);
+        return newAmount;
     }
 }
