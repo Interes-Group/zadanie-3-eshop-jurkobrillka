@@ -22,7 +22,7 @@ public interface IProductService {
 
     long getProductAmount(Long id) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
 
-    Long addProductAmount(long id, int amountPar) throws NotFoundException;
+    Long addProductAmount(long id, Long amountPar) throws NotFoundException;
 
     boolean isSufficientAmount(Long id, Long decrementAmount)throws NotFoundException;
 

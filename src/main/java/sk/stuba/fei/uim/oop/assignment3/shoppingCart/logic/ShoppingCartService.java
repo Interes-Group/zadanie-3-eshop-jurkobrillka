@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sk.stuba.fei.uim.oop.assignment3.exception.IllegalOperationException;
 import sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
+import sk.stuba.fei.uim.oop.assignment3.itemCart.data.IItemCartRepository;
 import sk.stuba.fei.uim.oop.assignment3.itemCart.data.ItemCart;
+import sk.stuba.fei.uim.oop.assignment3.itemCart.logic.IItemCartService;
 import sk.stuba.fei.uim.oop.assignment3.itemCart.web.bodies.ItemCartAddRequest;
 import sk.stuba.fei.uim.oop.assignment3.product.data.IProductRepository;
 import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
@@ -21,6 +23,9 @@ public class ShoppingCartService implements IShoppingCartService{
 
     @Autowired
     private IShoppingCartRepository shoppingCartRepository;
+
+    @Autowired
+    private IItemCartService itemCartService;
 
 
 
@@ -59,7 +64,7 @@ public class ShoppingCartService implements IShoppingCartService{
         ShoppingCart retShoppingCart = shoppingCartRepository.findShoppingCartById(id);
         //TODO JAK TO ZE TOTO HORE NIKDY NENI NULL????
         //ItemCart itemCartInRetShoppingCart = retShoppingCart.
-        System.out.println("Pracujem s"+retShoppingCart.getId()+" shoppingCartom");
+        //System.out.println("Pracujem s"+retShoppingCart.getId()+" shoppingCartom");
         Long idOfProductInCart = itemCart.getProductId();
         Product product = productService.getProductById(idOfProductInCart);
         System.out.println("Product ktory bol v itemCarte "+product);
@@ -92,12 +97,13 @@ public class ShoppingCartService implements IShoppingCartService{
                     else {
                         System.out.println("TOTO BY SOM MAL RIESIT?!?!!??!?!?");
                         //nie, vytvorit novy ItemCart s produktom a amountom z parametru,,,,z produktu odpocitam
-                        /*Long productAmountBefore = product.getAmount();
+                        Long productAmountBefore = product.getAmount();
                         product.setAmount(productAmountBefore- itemCart.getAmount());
-                        ItemCart newItemCartToAdd = new ItemCart();
-                        newItemCartToAdd.setAmount(itemCart.getAmount());
+                        //ItemCart newItemCartToAdd = new ItemCart(product,itemCart.getAmount());
+                        ItemCart newItemCartToAdd = itemCartService.createItemCart();
                         newItemCartToAdd.setProduct(product);
-                        retShoppingCart.getShoppingList().add(newItemCartToAdd);*/
+                        newItemCartToAdd.setAmount(itemCart.getAmount());
+                        retShoppingCart.getShoppingList().add(newItemCartToAdd);
                     }
                 }
                 else {
@@ -178,14 +184,14 @@ public class ShoppingCartService implements IShoppingCartService{
         else {
             System.out.println("PRODUKT ESTE NENI V KOSIKU");
             //decrementedProductAmount = p.getAmount()-itemCart.getAmount();
-            ItemCart itemCartAdd = new ItemCart();
+           // ItemCart itemCartAdd = new ItemCart();
 
             //Product product = productService.getProductById(itemCart.getProductId());
 
-            itemCartAdd.setProduct(p);
-            itemCartAdd.setAmount(itemCart.getAmount());
-            shoppingList.add(itemCartAdd);
-            System.out.println("PRIDALI SME DO KOSIKA "+itemCartAdd); //5
+            //itemCartAdd.setProduct(p);
+            //itemCartAdd.setAmount(itemCart.getAmount());
+            //shoppingList.add(itemCartAdd);
+            //System.out.println("PRIDALI SME DO KOSIKA "+itemCartAdd); //5
 
             //p.setAmount(decrementedProductAmount);
             //itemCart.getProduct().setAmount();
@@ -207,11 +213,15 @@ public class ShoppingCartService implements IShoppingCartService{
         }
         else {
             System.out.println("IDEM ZAPLATIT");
+            System.out.println(cart.getShoppingList());
+            System.out.println(cart.getShoppingList().size()+" size");
             for (ItemCart itemCart:cart.getShoppingList()){
+                System.out.println(itemCart.getAmount()+" * "+itemCart.getProduct().getPrice() );
                 payment+=itemCart.getAmount()*itemCart.getProduct().getPrice();
             }
             cart.setPaid(true);
             shoppingCartRepository.save(cart);
+            System.out.println(payment+" DOPICI KURVA");
             return payment;
         }
 

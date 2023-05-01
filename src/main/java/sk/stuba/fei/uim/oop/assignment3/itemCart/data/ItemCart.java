@@ -20,5 +20,10 @@ public class ItemCart {
     private Product product;
     private Long amount;
 
-
+    public ItemCart(Product product, Long amount) {
+        this.product = product;
+        this.amount = amount;
+    }
 }
+
+

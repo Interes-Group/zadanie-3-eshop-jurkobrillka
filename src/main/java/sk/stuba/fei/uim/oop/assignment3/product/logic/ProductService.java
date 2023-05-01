@@ -75,7 +75,7 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Long addProductAmount(long id, int amountPar) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
+    public Long addProductAmount(long id, Long amountPar) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
         Product oldProd = getProductById(id);
         Long newAmount = oldProd.getAmount()+amountPar;
         oldProd.setAmount(newAmount);

@@ -44,8 +44,13 @@ public class ProductController {
       //  return new Amount(productService.getProductAmount(id));
     //}
    @GetMapping(value = "/{id}/amount", produces = MediaType.APPLICATION_JSON_VALUE)
-   public Amount getAmount(@PathVariable("id") Long productId) throws NotFoundException {
-       return new Amount(productService.getProductAmount(productId));
+   public Amount getAmount(@PathVariable("id") Long id) throws NotFoundException {
+       return new Amount(productService.getProductAmount(id));
+   }
+
+   @PostMapping(value = "/{id}/amount", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+   public Amount addAmount(@PathVariable("id") Long id, @RequestBody Amount amount)throws NotFoundException{
+       return new Amount(productService.addProductAmount(id,amount.getAmount()));
    }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
