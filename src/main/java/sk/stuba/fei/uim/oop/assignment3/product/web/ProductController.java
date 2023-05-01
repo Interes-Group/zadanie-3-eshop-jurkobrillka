@@ -1,11 +1,11 @@
 package sk.stuba.fei.uim.oop.assignment3.product.web;
 
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
 import sk.stuba.fei.uim.oop.assignment3.product.logic.IProductService;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductEditRequest;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductRequest;
@@ -33,7 +33,7 @@ public class ProductController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ProductResponse getProduct(@PathVariable("id") Long id) throws NotFoundException {
+    public ProductResponse getProduct(@PathVariable("id") Long id) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
         ProductResponse retProdResponse = new ProductResponse(productService.getProductById(id));
         return retProdResponse;
     }

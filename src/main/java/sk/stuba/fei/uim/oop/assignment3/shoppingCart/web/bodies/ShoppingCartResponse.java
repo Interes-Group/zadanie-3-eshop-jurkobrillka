@@ -1,4 +1,27 @@
 package sk.stuba.fei.uim.oop.assignment3.shoppingCart.web.bodies;
 
+import lombok.Getter;
+import lombok.Setter;
+import sk.stuba.fei.uim.oop.assignment3.itemCart.data.ItemCart;
+import sk.stuba.fei.uim.oop.assignment3.shoppingCart.data.ShoppingCart;
+
+import java.util.List;
+
+@Getter
+@Setter
 public class ShoppingCartResponse {
+
+    private long id;
+
+    private List<ItemCart> shoppingList;
+
+    private boolean payed;
+
+    public ShoppingCartResponse(ShoppingCart shoppingCart) {
+        this.id = shoppingCart.getId();
+        this.shoppingList = shoppingCart.getShoppingList();
+        this.payed = shoppingCart.isPaid();
+    }
+
+
 }

@@ -1,8 +1,9 @@
 package sk.stuba.fei.uim.oop.assignment3.product.logic;
 
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sk.stuba.fei.uim.oop.assignment3.exception.IllegalOperationException;
+import sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
 import sk.stuba.fei.uim.oop.assignment3.product.data.IProductRepository;
 import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductEditRequest;
@@ -27,7 +28,7 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Product getProductById(long id) throws NotFoundException {
+    public Product getProductById(long id) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
         if (productRepository.findProductById(id)==null){
             //throw new NotFoundException();
             System.out.println("NotFoundException();");
@@ -41,7 +42,7 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Product updateProduct(long id, ProductEditRequest productEditRequest) throws NotFoundException {
+    public Product updateProduct(long id, ProductEditRequest productEditRequest) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
         Product product = getProductById(id);
         String nameProduct = productEditRequest.getName();
         String descProduct = productEditRequest.getDescription();
@@ -58,7 +59,7 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public void deleteProduct(long id) throws NotFoundException {
+    public void deleteProduct(long id) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
         productRepository.delete(getProductById(id));
     }
 
@@ -69,12 +70,24 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public int addProductAmount(long id, int amountPar) throws NotFoundException {
+    public int addProductAmount(long id, int amountPar) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
         Product oldProd = getProductById(id);
         int newAmount = oldProd.getAmount()+amountPar;
         oldProd.setAmount(newAmount);
         productRepository.save(oldProd);
         return newAmount;
+    }
+
+    @Override
+    public boolean isSufficientAmount(Long id, int decrementAmount) throws NotFoundException {
+        Product product = getProductById(id);
+        if(product.getAmount() - decrementAmount<0){
+            return false;
+        }
+        else {
+            product.setAmount(product.getAmount()-decrementAmount);
+            return true;
+        }
     }
 
 
