@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductAmount {
-    private int amount;
+public class Amount {
+    private Long amount;
 }

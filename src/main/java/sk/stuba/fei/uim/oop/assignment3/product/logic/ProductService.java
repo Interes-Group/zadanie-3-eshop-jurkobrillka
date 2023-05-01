@@ -2,8 +2,8 @@ package sk.stuba.fei.uim.oop.assignment3.product.logic;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sk.stuba.fei.uim.oop.assignment3.exception.IllegalOperationException;
 import sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
+import sk.stuba.fei.uim.oop.assignment3.itemCart.data.ItemCart;
 import sk.stuba.fei.uim.oop.assignment3.product.data.IProductRepository;
 import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductEditRequest;
@@ -66,7 +66,7 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public int getProductAmount(long id) throws NotFoundException {
+    public long getProductAmount(Long id) throws NotFoundException {
         Product product = getProductById(id);
         //4
         System.out.println("BRUH???"+product);
@@ -75,16 +75,16 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public int addProductAmount(long id, int amountPar) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
+    public Long addProductAmount(long id, int amountPar) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
         Product oldProd = getProductById(id);
-        int newAmount = oldProd.getAmount()+amountPar;
+        Long newAmount = oldProd.getAmount()+amountPar;
         oldProd.setAmount(newAmount);
         productRepository.save(oldProd);
         return newAmount;
     }
 
     @Override
-    public boolean isSufficientAmount(Long id, int decrementAmount) throws NotFoundException {
+    public boolean isSufficientAmount(Long id, Long decrementAmount) throws NotFoundException {
         Product product = returnExistingPrduct(id);
         if(product.getAmount() - decrementAmount<0){
             System.out.println("NEMOZEM DAT DO KOSIKA, AMOUNT POZIADAVKY JE VACSI AKO POCET NA SKLADW");
@@ -95,6 +95,20 @@ public class ProductService implements IProductService{
             product.setAmount(product.getAmount()-decrementAmount);
             return true;
         }
+    }
+
+    @Override
+    public ItemCart isProductInList(Long id, List<ItemCart> shoppingList) throws NotFoundException {
+        Product product = getProductById(id);
+        boolean productIsInList = false;
+        ItemCart retItemCart = null;
+        for (ItemCart itemCart:shoppingList){
+            if (product.equals(itemCart.getProduct())){
+                productIsInList = true;
+                retItemCart = itemCart;
+            }
+        }
+        return retItemCart;
     }
 
     @Override

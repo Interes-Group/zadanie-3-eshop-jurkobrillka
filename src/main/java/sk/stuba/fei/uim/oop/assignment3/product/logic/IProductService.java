@@ -1,7 +1,7 @@
 package sk.stuba.fei.uim.oop.assignment3.product.logic;
 
-import sk.stuba.fei.uim.oop.assignment3.exception.IllegalOperationException;
 import sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
+import sk.stuba.fei.uim.oop.assignment3.itemCart.data.ItemCart;
 import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductEditRequest;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductRequest;
@@ -20,11 +20,13 @@ public interface IProductService {
 
     void deleteProduct(long id) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
 
-    int getProductAmount(long id) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
+    long getProductAmount(Long id) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
 
-    int addProductAmount(long id, int amountPar) throws NotFoundException;
+    Long addProductAmount(long id, int amountPar) throws NotFoundException;
 
-    boolean isSufficientAmount(Long id, int decrementAmount)throws NotFoundException;
+    boolean isSufficientAmount(Long id, Long decrementAmount)throws NotFoundException;
+
+    ItemCart isProductInList(Long id, List<ItemCart> shoppingList) throws NotFoundException;
 
     Product returnExistingPrduct(Long id)throws NotFoundException;
 

@@ -20,7 +20,7 @@ public class Product {
     private Long id;
     private String name;
     private String description;
-    private int amount;
+    private Long amount;
     private String unit;
     private double price;
 

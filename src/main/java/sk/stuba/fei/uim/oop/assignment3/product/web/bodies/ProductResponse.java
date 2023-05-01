@@ -10,7 +10,7 @@ public class ProductResponse {
     private final Long id;
     private final String name;
     private final String description;
-    private final int amount;
+    private final Long amount;
     private final String unit;
     private final double price;
 

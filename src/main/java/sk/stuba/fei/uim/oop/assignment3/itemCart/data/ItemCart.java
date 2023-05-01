@@ -1,9 +1,7 @@
 package sk.stuba.fei.uim.oop.assignment3.itemCart.data;
 
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
 
 import javax.persistence.*;
@@ -12,6 +10,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 public class ItemCart {
 
     @Id
@@ -19,7 +18,7 @@ public class ItemCart {
     private Long id;
     @ManyToOne
     private Product product;
-    private int amount;
+    private Long amount;
 
 
 }

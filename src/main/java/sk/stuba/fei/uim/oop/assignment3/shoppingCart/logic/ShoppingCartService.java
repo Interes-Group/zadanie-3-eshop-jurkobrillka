@@ -53,13 +53,18 @@ public class ShoppingCartService implements IShoppingCartService{
     }
 
 
-    //TODO toto riesis!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     @Override
     public ShoppingCart addProductToSHoppingCartById(Long id, ItemCartAddRequest itemCart) throws NotFoundException, IllegalOperationException {
         ShoppingCart retShoppingCart = shoppingCartRepository.findShoppingCartById(id);
-        Long idProd = itemCart.getProductId();
-        System.out.println(retShoppingCart+" RETSHOPPINGCART");
-        //System.out.println(product+ " PRODUCT");
+        //TODO JAK TO ZE TOTO HORE NIKDY NENI NULL????
+        //ItemCart itemCartInRetShoppingCart = retShoppingCart.
+        System.out.println("Pracujem s"+retShoppingCart.getId()+" shoppingCartom");
+        Long idOfProductInCart = itemCart.getProductId();
+        Product product = productService.getProductById(idOfProductInCart);
+        System.out.println("Product ktory bol v itemCarte "+product);
+
+
         if (retShoppingCart!=null){
             System.out.println("KOSIK EXISTUJE "+retShoppingCart);
             //kosikExistuje
@@ -69,35 +74,45 @@ public class ShoppingCartService implements IShoppingCartService{
             }
             else {
                 System.out.println("KOSIK NENI ZAPLATENY - MOZEM PRIDAVAT");
-                //potrebuje prve zistit ci produkt vobec existuje
-                if(idProd!=null){
-                    System.out.println("IDEM PRIDAVAT S ID "+idProd);
-                    if (productService.isSufficientAmount(idProd,itemCart.getAmount())){
-                        addProductToList(id, itemCart, retShoppingCart.getShoppingList());
-                        if (retShoppingCart!=null){
-                            System.out.println(shoppingCartRepository.save(retShoppingCart)+" ********************************************");
-                            return shoppingCartRepository.save(retShoppingCart);
-                        }
-                        else {
-                            System.out.println("DOPICI\nDOPICI\nDOPICI");
-                            throw new NotFoundException();
-                        }
-
+                //potrebuje prve zistit ci produkt vobec existuje - produkt proste exituje bo kebyze neexistuje ta vyjebe exception skorej hore
+                //potrebujem zistit ci mozem brat zo skladu alebo ne a jebat na ukladanie...
+                if (productService.isSufficientAmount(idOfProductInCart,itemCart.getAmount())){
+                    System.out.println("JE DOST NA SKLADE MOZEM DALEJ");
+                    ////potrebujem zistit ci je uz produkt v kosiku
+                    //ak ano, pridam len kosikAmount a productAmount odpocita
+                    //ak nie, vytvorit novy ItemCart s produktom a amountom z parametru,,,,z produktu odpocitam
+                    ItemCart itemCartInCurrentShoppingCart = productService.isProductInList(idOfProductInCart,retShoppingCart.getShoppingList());
+                    if (itemCartInCurrentShoppingCart != null){
+                        //ano, je v kosiku pridam len kosikAmount a productAmount odpocita
+                        Long productAmountBefore = product.getAmount();
+                        Long productAmountInCartBefore = itemCartInCurrentShoppingCart.getAmount();
+                        product.setAmount(productAmountBefore- itemCartInCurrentShoppingCart.getAmount());
+                        itemCartInCurrentShoppingCart.setAmount(productAmountInCartBefore+productAmountBefore);
                     }
                     else {
-                        throw new IllegalOperationException();
+                        System.out.println("TOTO BY SOM MAL RIESIT?!?!!??!?!?");
+                        //nie, vytvorit novy ItemCart s produktom a amountom z parametru,,,,z produktu odpocitam
+                        /*Long productAmountBefore = product.getAmount();
+                        product.setAmount(productAmountBefore- itemCart.getAmount());
+                        ItemCart newItemCartToAdd = new ItemCart();
+                        newItemCartToAdd.setAmount(itemCart.getAmount());
+                        newItemCartToAdd.setProduct(product);
+                        retShoppingCart.getShoppingList().add(newItemCartToAdd);*/
                     }
                 }
                 else {
-                    throw new NotFoundException();
+                    System.out.println("NENI DOST NA SKLADE");
+                    throw new IllegalOperationException();
                 }
+
+                return shoppingCartRepository.save(retShoppingCart);
+
             }
         }
         else {
-            //kosikNeexistuje
             throw new NotFoundException();
         }
-        //return  shoppingCartRepository.save(cart);
+
     }
 
     @Override
@@ -144,18 +159,18 @@ public class ShoppingCartService implements IShoppingCartService{
             System.out.println("V SHOPPING LISTE NENI NIC");
             System.out.println("KOLKO JE DANEHO PRODUKTU: (product amount):"+ p.getAmount());
             System.out.println("KOLKO CHCU Z PRODUKTU UJEBAT ZO SKLADU: "+itemCart.getAmount());
-            decrementedProductAmount = productService.getProductAmount(itemCartProductId.intValue()) - itemCart.getAmount();
             System.out.println("KOLKO OSTANE V SKLADE PRODUKTU "+decrementedProductAmount);
+            //decrementedProductAmount = productService.getProductAmount(itemCartProductId.longValue()) - itemCart.getAmount();
         }
         else {
             System.out.println("V SHOPPUING LISTE JE NIECO");
-            decrementedProductAmount = p.getAmount()-itemCart.getAmount();
+            //decrementedProductAmount = p.getAmount()-itemCart.getAmount();
         }
 
         if (containsProd){
             System.out.println("PRODUKT JE V KOSIKU");
-            p.setAmount(itemCart.getAmount());
-            p.setAmount(decrementedProductAmount);
+            //p.setAmount(itemCart.getAmount());
+            //p.setAmount(decrementedProductAmount);
             //kosik obsahuje produkt
             //nastavim sa na id kde je ten itemCart rovny produktu v liste shoppingList
             //dam ++ jaky je amount itemCart
@@ -172,7 +187,7 @@ public class ShoppingCartService implements IShoppingCartService{
             shoppingList.add(itemCartAdd);
             System.out.println("PRIDALI SME DO KOSIKA "+itemCartAdd); //5
 
-            p.setAmount(decrementedProductAmount);
+            //p.setAmount(decrementedProductAmount);
             //itemCart.getProduct().setAmount();
             //TODO TU MOZNO CHYBY
 
@@ -180,5 +195,25 @@ public class ShoppingCartService implements IShoppingCartService{
             //pridam do listu cely itemCart a fuck off
 
         }
+    }
+
+    @Override
+    public double payForCart(Long id) throws NotFoundException, IllegalOperationException {
+        ShoppingCart cart = getShoppingCartById(id);
+        double payment = 0;
+        if (isSHoppingCartPayed(cart)){
+            System.out.println("IS PAID");
+            throw new IllegalOperationException();
+        }
+        else {
+            System.out.println("IDEM ZAPLATIT");
+            for (ItemCart itemCart:cart.getShoppingList()){
+                payment+=itemCart.getAmount()*itemCart.getProduct().getPrice();
+            }
+            cart.setPaid(true);
+            shoppingCartRepository.save(cart);
+            return payment;
+        }
+
     }
 }

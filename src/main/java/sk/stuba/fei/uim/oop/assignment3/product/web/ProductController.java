@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
 import sk.stuba.fei.uim.oop.assignment3.product.logic.IProductService;
-import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductAmount;
+import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.Amount;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductEditRequest;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductRequest;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductResponse;
@@ -39,16 +39,26 @@ public class ProductController {
         return retProdResponse;
     }
 
-    @GetMapping(value = "{id}/amount", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ProductAmount getAmount(@PathVariable("id") Long id) throws NotFoundException{
-        return new ProductAmount(productService.getProductAmount(id));
-    }
+   // @GetMapping(value = "/{id}/amount", produces = MediaType.APPLICATION_JSON_VALUE)
+    //public Amount getAmount(@PathVariable("id") Long id) throws NotFoundException{
+      //  return new Amount(productService.getProductAmount(id));
+    //}
+   @GetMapping(value = "/{id}/amount", produces = MediaType.APPLICATION_JSON_VALUE)
+   public Amount getAmount(@PathVariable("id") Long productId) throws NotFoundException {
+       return new Amount(productService.getProductAmount(productId));
+   }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ProductResponse updateProduct(@PathVariable("id") Long id, @RequestBody ProductEditRequest productEditRequestBody) throws NotFoundException {
         ProductResponse retProductResponse = new ProductResponse(productService.updateProduct(id,productEditRequestBody));
         return retProductResponse;
     }
+
+    @DeleteMapping(value = "/{id}")
+    public void deleteProduct(@PathVariable("id") Long id) throws NotFoundException {
+        productService.deleteProduct(id);
+    }
+
 
 
 

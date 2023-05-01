@@ -26,4 +26,7 @@ public interface IShoppingCartService {
 
     void addProductToList(Long id, ItemCartAddRequest itemCart, List<ItemCart> shoppingList) throws NotFoundException;
 
+    double payForCart(Long id) throws NotFoundException, IllegalOperationException;
+
+
 }
