@@ -9,5 +9,5 @@ public interface IProductRepository extends JpaRepository<Product,Long> {
 
     List<Product> findAll();
 
-    Product findProductById(Long id);
+    Product findProductById(long id);
 }

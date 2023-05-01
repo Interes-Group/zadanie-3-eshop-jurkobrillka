@@ -40,7 +40,9 @@ public class ShoppingCartController {
     }
 
     @PostMapping(value = "/{id}/add", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ShoppingCartResponse addToShoppingCart(@PathVariable("id") Long id, @RequestBody ItemCart itemCart)throws NotFoundException, IllegalOperationException{
-        return new ShoppingCartResponse(shoppingCartService.addProductToSHoppingCartById(id,itemCart));
+    public ShoppingCartResponse addToShoppingCart(@PathVariable("id") Long id, @RequestBody ItemCartAddRequest itemCartAddRequest)throws NotFoundException, IllegalOperationException{
+        return new ShoppingCartResponse(shoppingCartService.addProductToSHoppingCartById(id,itemCartAddRequest));
     }
+
+
 }

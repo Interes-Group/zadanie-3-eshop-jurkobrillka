@@ -24,7 +24,8 @@ public interface IProductService {
 
     int addProductAmount(long id, int amountPar) throws NotFoundException;
 
-
     boolean isSufficientAmount(Long id, int decrementAmount)throws NotFoundException;
+
+    Product returnExistingPrduct(Long id)throws NotFoundException;
 
 }

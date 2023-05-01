@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import sk.stuba.fei.uim.oop.assignment3.exception.IllegalOperationException;
 import sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
 import sk.stuba.fei.uim.oop.assignment3.itemCart.data.ItemCart;
+import sk.stuba.fei.uim.oop.assignment3.itemCart.web.bodies.ItemCartAddRequest;
 import sk.stuba.fei.uim.oop.assignment3.product.data.IProductRepository;
 import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
 import sk.stuba.fei.uim.oop.assignment3.product.logic.IProductService;
@@ -20,6 +21,8 @@ public class ShoppingCartService implements IShoppingCartService{
 
     @Autowired
     private IShoppingCartRepository shoppingCartRepository;
+
+
 
     @Autowired
     private IProductService productService;
@@ -52,28 +55,41 @@ public class ShoppingCartService implements IShoppingCartService{
 
     //TODO toto riesis!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     @Override
-    public ShoppingCart addProductToSHoppingCartById(Long id, ItemCart itemCart) throws NotFoundException, IllegalOperationException {
+    public ShoppingCart addProductToSHoppingCartById(Long id, ItemCartAddRequest itemCart) throws NotFoundException, IllegalOperationException {
         ShoppingCart retShoppingCart = shoppingCartRepository.findShoppingCartById(id);
-        Product product = itemCart.getProduct();
+        Long idProd = itemCart.getProductId();
+        System.out.println(retShoppingCart+" RETSHOPPINGCART");
+        //System.out.println(product+ " PRODUCT");
         if (retShoppingCart!=null){
+            System.out.println("KOSIK EXISTUJE "+retShoppingCart);
             //kosikExistuje
             if (isSHoppingCartPayed(retShoppingCart)){
                 //kosik je zaplateny - vyhod 400
                 throw new IllegalOperationException();
             }
             else {
-                if (productService.isSufficientAmount(id,itemCart.getAmount())){
-                    //na sklade je dost produktov
-                    //zistujem ci shopping cart obsahuje dany produkt,
-                    if (product!=null){
+                System.out.println("KOSIK NENI ZAPLATENY - MOZEM PRIDAVAT");
+                //potrebuje prve zistit ci produkt vobec existuje
+                if(idProd!=null){
+                    System.out.println("IDEM PRIDAVAT S ID "+idProd);
+                    if (productService.isSufficientAmount(idProd,itemCart.getAmount())){
                         addProductToList(id, itemCart, retShoppingCart.getShoppingList());
-                    }else {
-                        throw new NotFoundException();
+                        if (retShoppingCart!=null){
+                            System.out.println(shoppingCartRepository.save(retShoppingCart)+" ********************************************");
+                            return shoppingCartRepository.save(retShoppingCart);
+                        }
+                        else {
+                            System.out.println("DOPICI\nDOPICI\nDOPICI");
+                            throw new NotFoundException();
+                        }
+
+                    }
+                    else {
+                        throw new IllegalOperationException();
                     }
                 }
                 else {
-                    //na sklade neni dost produktov
-                    throw new IllegalOperationException();
+                    throw new NotFoundException();
                 }
             }
         }
@@ -81,7 +97,7 @@ public class ShoppingCartService implements IShoppingCartService{
             //kosikNeexistuje
             throw new NotFoundException();
         }
-        return null;
+        //return  shoppingCartRepository.save(cart);
     }
 
     @Override
@@ -108,30 +124,56 @@ public class ShoppingCartService implements IShoppingCartService{
     }
 
     @Override
-    public void addProductToList(Long id, ItemCart itemCart, List<ItemCart> shoppingList) {
+    public void addProductToList(Long id, ItemCartAddRequest itemCart, List<ItemCart> shoppingList) throws NotFoundException {
         boolean containsProd = false;
-        int indexProduct = 0;
-        for (ItemCart itemCartLoop: shoppingList){
-            if (itemCartLoop.getProduct().equals(itemCart.getProduct())){
+        Long itemCartProductId = itemCart.getProductId();
+        System.out.println("ID PRODUKTU "+itemCartProductId);
+        Product p = productService.getProductById(itemCartProductId);
+
+
+        for (int i = 0; i <shoppingList.size() ; i++) {
+            if (shoppingList.get(i).getProduct().getId().equals(itemCart.getProductId())){
+                System.out.println("O ANO UZ EXISTUJE PRODUKT V KOSIKU");
                 containsProd = true;
                 break;
             }
-            indexProduct++;
         }
 
         int decrementedProductAmount = 0;
+        if (shoppingList.size()==0){
+            System.out.println("V SHOPPING LISTE NENI NIC");
+            System.out.println("KOLKO JE DANEHO PRODUKTU: (product amount):"+ p.getAmount());
+            System.out.println("KOLKO CHCU Z PRODUKTU UJEBAT ZO SKLADU: "+itemCart.getAmount());
+            decrementedProductAmount = productService.getProductAmount(itemCartProductId.intValue()) - itemCart.getAmount();
+            System.out.println("KOLKO OSTANE V SKLADE PRODUKTU "+decrementedProductAmount);
+        }
+        else {
+            System.out.println("V SHOPPUING LISTE JE NIECO");
+            decrementedProductAmount = p.getAmount()-itemCart.getAmount();
+        }
+
         if (containsProd){
-             decrementedProductAmount = shoppingList.get(indexProduct).getProduct().getAmount()-itemCart.getAmount();
-            shoppingList.get(indexProduct).setAmount(itemCart.getAmount());
-            shoppingList.get(indexProduct).getProduct().setAmount(decrementedProductAmount);
+            System.out.println("PRODUKT JE V KOSIKU");
+            p.setAmount(itemCart.getAmount());
+            p.setAmount(decrementedProductAmount);
             //kosik obsahuje produkt
             //nastavim sa na id kde je ten itemCart rovny produktu v liste shoppingList
             //dam ++ jaky je amount itemCart
         }
         else {
-            decrementedProductAmount = shoppingList.get(indexProduct).getProduct().getAmount()-itemCart.getAmount();
-            shoppingList.add(itemCart);
-            itemCart.getProduct().setAmount(decrementedProductAmount);
+            System.out.println("PRODUKT ESTE NENI V KOSIKU");
+            //decrementedProductAmount = p.getAmount()-itemCart.getAmount();
+            ItemCart itemCartAdd = new ItemCart();
+
+            //Product product = productService.getProductById(itemCart.getProductId());
+
+            itemCartAdd.setProduct(p);
+            itemCartAdd.setAmount(itemCart.getAmount());
+            shoppingList.add(itemCartAdd);
+            System.out.println("PRIDALI SME DO KOSIKA "+itemCartAdd); //5
+
+            p.setAmount(decrementedProductAmount);
+            //itemCart.getProduct().setAmount();
             //TODO TU MOZNO CHYBY
 
             //kosik neobsahuje produkt,

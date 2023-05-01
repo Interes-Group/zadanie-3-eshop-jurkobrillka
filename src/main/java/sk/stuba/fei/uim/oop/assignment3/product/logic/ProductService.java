@@ -29,21 +29,23 @@ public class ProductService implements IProductService{
 
     @Override
     public Product getProductById(long id) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
-        if (productRepository.findProductById(id)==null){
-            //throw new NotFoundException();
-            System.out.println("NotFoundException();");
-            //TODO
-            return null;
+        System.out.println("PRED NULNULNUKNUL");
+        Product product = productRepository.findProductById(id);
+        System.out.println(product);
+        if (product==null){
+            System.out.println("NULNULNULLNULLNULLNULLNULLNULL");
+            throw new NotFoundException();
         }
         else {
-            return productRepository.findProductById(id);
+            return product;
         }
 
     }
 
     @Override
     public Product updateProduct(long id, ProductEditRequest productEditRequest) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
-        Product product = getProductById(id);
+        Product product = /*returnExistingPrduct(id);*/
+        getProductById(id);
         String nameProduct = productEditRequest.getName();
         String descProduct = productEditRequest.getDescription();
 
@@ -66,6 +68,9 @@ public class ProductService implements IProductService{
     @Override
     public int getProductAmount(long id) throws NotFoundException {
         Product product = getProductById(id);
+        //4
+        System.out.println("BRUH???"+product);
+        System.out.println("PO BRUHH je product amount"+product.getAmount());
         return product.getAmount();
     }
 
@@ -80,13 +85,26 @@ public class ProductService implements IProductService{
 
     @Override
     public boolean isSufficientAmount(Long id, int decrementAmount) throws NotFoundException {
-        Product product = getProductById(id);
+        Product product = returnExistingPrduct(id);
         if(product.getAmount() - decrementAmount<0){
+            System.out.println("NEMOZEM DAT DO KOSIKA, AMOUNT POZIADAVKY JE VACSI AKO POCET NA SKLADW");
             return false;
         }
         else {
+            System.out.println("MOZEM BRAT ZO SKLADU");
             product.setAmount(product.getAmount()-decrementAmount);
             return true;
+        }
+    }
+
+    @Override
+    public Product returnExistingPrduct(Long id) throws NotFoundException {
+        Product product = getProductById(id);
+        if (product!=null){
+            return product;
+        }
+        else {
+            throw new NotFoundException();
         }
     }
 

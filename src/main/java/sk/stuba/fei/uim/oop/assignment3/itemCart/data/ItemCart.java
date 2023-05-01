@@ -20,4 +20,6 @@ public class ItemCart {
     @ManyToOne
     private Product product;
     private int amount;
+
+
 }
