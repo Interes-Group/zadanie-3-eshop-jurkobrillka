@@ -88,17 +88,23 @@ public class ShoppingCartService implements IShoppingCartService{
                     //ak nie, vytvorit novy ItemCart s produktom a amountom z parametru,,,,z produktu odpocitam
                     ItemCart itemCartInCurrentShoppingCart = productService.isProductInList(idOfProductInCart,retShoppingCart.getShoppingList());
                     if (itemCartInCurrentShoppingCart != null){
+                        System.out.println("Produkt je v kosiku");
                         //ano, je v kosiku pridam len kosikAmount a productAmount odpocita
                         Long productAmountBefore = product.getAmount();
                         Long productAmountInCartBefore = itemCartInCurrentShoppingCart.getAmount();
+                        System.out.println("Product old amount: "+product.getAmount());
                         product.setAmount(productAmountBefore- itemCartInCurrentShoppingCart.getAmount());
+                        System.out.println("Product new amount: "+product.getAmount());
                         itemCartInCurrentShoppingCart.setAmount(productAmountInCartBefore+productAmountBefore);
                     }
                     else {
                         System.out.println("TOTO BY SOM MAL RIESIT?!?!!??!?!?");
+                        System.out.println("Produkt nie je v kosiku,musim vytvorit novy");
                         //nie, vytvorit novy ItemCart s produktom a amountom z parametru,,,,z produktu odpocitam
                         Long productAmountBefore = product.getAmount();
+                        System.out.println("Product old amount: "+product.getAmount());
                         product.setAmount(productAmountBefore- itemCart.getAmount());
+                        System.out.println("Product new amount: "+product.getAmount());
                         //ItemCart newItemCartToAdd = new ItemCart(product,itemCart.getAmount());
                         ItemCart newItemCartToAdd = itemCartService.createItemCart();
                         newItemCartToAdd.setProduct(product);

@@ -86,13 +86,17 @@ public class ProductService implements IProductService{
     @Override
     public boolean isSufficientAmount(Long id, Long decrementAmount) throws NotFoundException {
         Product product = returnExistingPrduct(id);
+        System.out.println("Product.getAmount()"+product.getAmount());
+        System.out.println("Decrement amount"+decrementAmount);
         if(product.getAmount() - decrementAmount<0){
             System.out.println("NEMOZEM DAT DO KOSIKA, AMOUNT POZIADAVKY JE VACSI AKO POCET NA SKLADW");
             return false;
         }
         else {
             System.out.println("MOZEM BRAT ZO SKLADU");
-            product.setAmount(product.getAmount()-decrementAmount);
+            long newAmount = product.getAmount()-decrementAmount;
+            System.out.println("NewAmount "+newAmount);
+            //product.setAmount(newAmount);
             return true;
         }
     }
