@@ -1,7 +1,6 @@
 package sk.stuba.fei.uim.oop.assignment3.shoppingCart.data;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import sk.stuba.fei.uim.oop.assignment3.itemCart.data.ItemCart;
 

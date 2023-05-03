@@ -35,14 +35,9 @@ public class ProductController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ProductResponse getProduct(@PathVariable("id") Long id) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
-        ProductResponse retProdResponse = new ProductResponse(productService.getProductById(id));
-        return retProdResponse;
+        return new ProductResponse(productService.getProductById(id));
     }
 
-   // @GetMapping(value = "/{id}/amount", produces = MediaType.APPLICATION_JSON_VALUE)
-    //public Amount getAmount(@PathVariable("id") Long id) throws NotFoundException{
-      //  return new Amount(productService.getProductAmount(id));
-    //}
    @GetMapping(value = "/{id}/amount", produces = MediaType.APPLICATION_JSON_VALUE)
    public Amount getAmount(@PathVariable("id") Long id) throws NotFoundException {
        return new Amount(productService.getProductAmount(id));
@@ -64,10 +59,6 @@ public class ProductController {
         productService.deleteProduct(id);
     }
 
-
-
-
-    //TODO tu si skoncil
 
 
 
