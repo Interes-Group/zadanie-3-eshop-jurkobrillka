@@ -30,7 +30,6 @@ public class ProductService implements IProductService {
     @Override
     public Product getProductById(long id) throws sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException {
         Product product = productRepository.findProductById(id);
-        System.out.println(product);
         if (product == null) {
             throw new NotFoundException();
         } else {
