@@ -16,11 +16,4 @@ public class ItemCartService implements IItemCartService{
         return itemCartRepository.save(new ItemCart());
     }
 
-
-
-    //TODO pouzi SAVE
-    @Override
-    public ItemCart saveItemCart(ItemCart itemCart) {
-        return itemCartRepository.save(itemCart);
-    }
 }
