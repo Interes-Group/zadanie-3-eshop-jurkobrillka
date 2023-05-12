@@ -21,7 +21,7 @@ public class Product {
     private String description;
     private Long amount;
     private String unit;
-    private double price;
+    private Double price;
 
 
     public Product(ProductRequest productRequest) {
